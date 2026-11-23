@@ -1,0 +1,125 @@
+@import "tailwindcss";
+
+:root {
+  /* Light Mode Canvas & Surfaces (Vercel / Linear / Stripe aesthetic) */
+  --bg-canvas: #FAFAFA;
+  --bg-canvas-alt: #FBFBFA;
+  --bg-surface: #FFFFFF;
+  --bg-muted: #F7F7F8;
+
+  /* Hairline Borders */
+  --border-subtle: rgba(19, 19, 22, 0.08);
+  --border-solid: #E4E4E7;
+  --border-strong: #D4D4D8;
+
+  /* Typography Colors (WCAG 2.2 AA calibrated) */
+  --fg-primary: #131316;
+  --fg-slate: #0A2540;
+  --fg-muted: #52525B;
+  --fg-subtle: #71717A;
+
+  /* Exclusive Electric Blue Accent (M3D Arrow reference) */
+  --accent-electric: #008CDD;
+  --accent-electric-hover: #0077BE;
+  --accent-electric-surface: rgba(0, 140, 221, 0.08);
+  --accent-electric-border: rgba(0, 140, 221, 0.24);
+
+  /* Radii & Shadows */
+  --radius-bento: 1rem;
+  --radius-pill: 9999px;
+  --shadow-bento: 0 1px 2px rgba(19, 19, 22, 0.03), 0 8px 24px -4px rgba(19, 19, 22, 0.04);
+  --shadow-bento-hover: 0 2px 4px rgba(19, 19, 22, 0.05), 0 16px 32px -6px rgba(0, 140, 221, 0.08);
+}
+
+@theme inline {
+  --color-canvas: var(--bg-canvas);
+  --color-canvas-alt: var(--bg-canvas-alt);
+  --color-surface: var(--bg-surface);
+  --color-muted: var(--bg-muted);
+  --color-border-subtle: var(--border-solid);
+  --color-fg-primary: var(--fg-primary);
+  --color-fg-slate: var(--fg-slate);
+  --color-fg-muted: var(--fg-muted);
+  --color-accent-electric: var(--accent-electric);
+  --color-accent-electric-hover: var(--accent-electric-hover);
+  --color-accent-surface: var(--accent-electric-surface);
+  --color-accent-border: var(--accent-electric-border);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    border-color: var(--border-solid);
+  }
+
+  html {
+    background-color: var(--bg-canvas);
+    color: var(--fg-primary);
+    font-family: var(--font-sans);
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    background-color: var(--bg-canvas);
+    color: var(--fg-primary);
+    min-height: 100dvh;
+    overflow-x: hidden;
+  }
+
+  /* Focus ring accessible WCAG 2.2 AA */
+  :focus-visible {
+    outline: 2px solid var(--accent-electric);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background-color: rgba(0, 140, 221, 0.16);
+    color: var(--fg-slate);
+  }
+}
+
+/* Subtle engineering grid background */
+.bg-engineering-grid {
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(19, 19, 22, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(19, 19, 22, 0.035) 1px, transparent 1px);
+}
+
+/* Bento card styling */
+.bento-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-solid);
+  border-radius: var(--radius-bento);
+  box-shadow: var(--shadow-bento);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.bento-card:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-bento-hover);
+}
+
+/* Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
