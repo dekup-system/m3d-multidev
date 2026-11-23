@@ -14,30 +14,42 @@ interface PortfolioProject {
 const PORTFOLIO_PROJECTS: PortfolioProject[] = [
   {
     name: "DEKUP",
-    category: "Sistema & Plataforma Digital",
+    category: "Pré-Edição Audiovisual Inteligente",
     url: "https://www.dekup.com.br/",
     displayUrl: "dekup.com.br",
     description:
-      "Ecossistema digital desenvolvido sob medida com foco em alta performance operacional, automação de processos e experiência fluida entre dispositivos.",
-    highlights: ["Arquitetura Multiplataforma", "Alta Performance", "Automação de Fluxos"],
+      "Infraestrutura inteligente de pré-edição para profissionais de eventos e videocasts. Leva o material do bruto à timeline estruturada: sincroniza múltiplos canais, analisa áudio e vídeo, organiza e monta projetos multicâmeras com Assistente IA 100% local e offline na estação.",
+    highlights: [
+      "Assistente IA 100% Offline",
+      "Sincronismo & Montagem Multicâmeras",
+      "Videocast 2.0 & Same-Day Edit",
+    ],
   },
   {
     name: "NexIA Core",
-    category: "Inteligência & Automação Corporativa",
+    category: "Inteligência e Diagnóstico de Rede Local",
     url: "https://www.nexiacore.com.br/",
     displayUrl: "nexiacore.com.br",
     description:
-      "Plataforma inteligente voltada à integração de operações, atendimento e gestão com tecnologia moderna e fluxos automatizados em nuvem.",
-    highlights: ["IA & Automação", "Gestão em Nuvem", "Integração de Sistemas"],
+      "Plataforma desktop (Windows 10/11) para descoberta de ativos, mapeamento de topologia, auditoria de postura de segurança e diagnóstico de rede em um único painel. Opera 100% localmente com IA privada (Ollama), modo somente leitura e geração de relatórios executivos sem enviar dados à nuvem.",
+    highlights: [
+      "Descoberta & Topologia Local",
+      "Auditoria de Segurança & Postura",
+      "IA Privada 100% Offline (Windows)",
+    ],
   },
   {
     name: "Kitefy",
-    category: "Aplicação Web Moderna",
+    category: "Estúdio Ágil de Marketing Orgânico & GEO",
     url: "https://kitefy.vercel.app",
     displayUrl: "kitefy.vercel.app",
     description:
-      "Aplicação web responsiva e rápida, projetada com interface intuitiva, carregamento instantâneo e arquitetura escalável.",
-    highlights: ["UX/UI Minimalista", "Web App Responsivo", "Deploy Cloud"],
+      "Plataforma web que extrai o perfil e tom de voz da marca a partir da URL em segundos para gerar roteiros com ganchos A/B, carrosséis e artigos otimizados para buscadores e assistentes de IA (GEO / Schema.org), com aprovação rápida e exportação direta sem exigir conexão de redes sociais.",
+    highlights: [
+      "Roteiros, Carrosséis & Artigos GEO",
+      "Diagnóstico de Marca por URL",
+      "Aprendizado por Telemetria",
+    ],
   },
 ];
 
@@ -62,7 +74,7 @@ export function PortfolioSection() {
             Alguns dos sistemas desenvolvidos
           </h2>
           <p className="mt-3 text-base text-[#52525B]">
-            Conheça algumas das plataformas e soluções desenvolvidas pela nossa engenharia.
+            Conheça algumas das plataformas e soluções reais criadas pela nossa engenharia.
           </p>
         </div>
 
