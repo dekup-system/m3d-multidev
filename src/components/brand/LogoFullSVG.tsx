@@ -112,10 +112,10 @@ export function LogoFullSVG({
         strokeWidth="1"
       />
 
-      {/* Glifo "D" Isométrico no Topo (Grafite #131316) */}
-      <g transform="translate(160, 74) scale(1, 0.58) rotate(-45)">
+      {/* Glifo "D" Isométrico no Topo (Grafite #131316) — Mesma orientação da logo original */}
+      <g transform="translate(160, 74) scale(1, 0.58) rotate(45)">
         <path
-          d="M-22 -24 L2 -24 C18 -24 28 -14 28 0 C28 14 18 24 2 24 L-22 24 Z M-11 -13 L-11 13 L1 13 C10 13 16 8 16 0 C16 -8 10 -13 1 -13 Z"
+          d="M-24 -26 L2 -26 C20 -26 30 -15 30 0 C30 15 20 26 2 26 L-24 26 Z M-12 -14 L-12 14 L1 14 C11 14 17 9 17 0 C17 -9 11 -14 1 -14 Z"
           fill="#131316"
         />
       </g>

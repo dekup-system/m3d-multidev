@@ -38,47 +38,48 @@ function drawRoundedRect(
 }
 
 /**
- * Gera uma textura Canvas 2D com cantos arredondados e fundo externo transparente
- * para cada face do cubo M3D ("M", "3", "D"):
- * - Nunca deixa pontas sobrando para fora do cubo branco.
- * - Para o "D" superior, rotaciona o glifo em -45° (sentido anti-horário) na própria
- *   textura mantendo a face alinhada às arestas do cubo branco.
+ * Gera a textura 512x512 para cada uma das 3 faces visíveis ("M", "3", "D"):
+ * - Todas as faces têm exatamente a mesma dimensão (1.32 x 1.32) e a mesma
+ *   proporção de fonte (315px) para M, 3 e D.
+ * - O quadro quadrado da textura fica 100% paralelo às arestas de cada face do cubo.
+ * - Para a letra "D" do topo, posiciona o D diagonalmente na mesma orientação
+ *   exata da logomarca original enviada (haste reta apontando para o canto
+ *   superior-esquerdo e barriga curva apontando para o vértice frontal-inferior).
  */
-function createGlyphTexture(
-  glyph: "M" | "3" | "D",
-  rotateCounterClockwise45 = false
-): THREE.CanvasTexture {
+function createGlyphTexture(glyph: "M" | "3" | "D"): THREE.CanvasTexture {
   const canvas = document.createElement("canvas");
   canvas.width = 512;
   canvas.height = 512;
   const ctx = canvas.getContext("2d");
 
   if (ctx) {
-    // Limpa tudo com transparência total para evitar pontas quadradas saindo do cubo
     ctx.clearRect(0, 0, 512, 512);
 
-    // Painel interno arredondado (imita o chanfro original da logo M3D)
-    drawRoundedRect(ctx, 28, 28, 456, 456, 88);
+    // Quadro da face com cantos arredondados seguindo o chanfro do cubo branco
+    drawRoundedRect(ctx, 16, 16, 480, 480, 84);
     ctx.fillStyle = "#F2F2F5";
     ctx.fill();
 
-    ctx.lineWidth = 8;
+    ctx.lineWidth = 6;
     ctx.strokeStyle = "#E4E4E7";
     ctx.stroke();
 
-    // Desenha o glifo centralizado
     ctx.save();
     ctx.translate(256, 256);
-    if (rotateCounterClockwise45) {
-      // Rotaciona 45° no sentido anti-horário para alinhar o "D" à perspectiva isométrica
-      ctx.rotate(-Math.PI / 4);
+
+    if (glyph === "D") {
+      // Com o cubo girado a -45° em Y e a face superior deitada (-90° em X),
+      // girar +45° (Math.PI / 4) alinha a letra D exatamente na horizontal da câmera:
+      // haste reta na parte superior-esquerda e barriga curva apontando para baixo (entre M e 3),
+      // idêntico à logomarca original e com o mesmo tamanho proporcional de M e 3.
+      ctx.rotate(Math.PI / 4);
     }
 
     ctx.fillStyle = "#131316";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.font = "900 290px system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif";
-    ctx.fillText(glyph, 0, 12);
+    ctx.font = "900 315px system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif";
+    ctx.fillText(glyph, 0, 14);
     ctx.restore();
   }
 
@@ -107,10 +108,9 @@ function ProceduralM3DCube({
   const textures = useMemo(() => {
     if (typeof document === "undefined") return null;
     return {
-      M: createGlyphTexture("M", false),
-      three: createGlyphTexture("3", false),
-      // Gira o D em 45° no sentido anti-horário dentro do painel alinhado ao cubo
-      D: createGlyphTexture("D", true),
+      M: createGlyphTexture("M"),
+      three: createGlyphTexture("3"),
+      D: createGlyphTexture("D"),
     };
   }, []);
 
@@ -180,10 +180,10 @@ function ProceduralM3DCube({
           />
         </RoundedBox>
 
-        {/* Placa Face Topo (+Y) — Alinhada às arestas do cubo (0 rad em Z) e glifo "D" girado em 45° anti-horário */}
+        {/* Placa Face Topo (+Y) — Alinhada às 4 bordas superiores do cubo e com a mesma dimensão (1.32 x 1.32) */}
         {textures && (
           <mesh position={[0, 0.934, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-            <planeGeometry args={[1.24, 1.24]} />
+            <planeGeometry args={[1.32, 1.32]} />
             <meshPhysicalMaterial
               map={textures.D}
               transparent
@@ -196,10 +196,10 @@ function ProceduralM3DCube({
           </mesh>
         )}
 
-        {/* Placa Face Esquerda (+Z) — Glifo "M" */}
+        {/* Placa Face Esquerda (+Z) — Glifo "M" (1.32 x 1.32) */}
         {textures && (
           <mesh position={[0, 0, 0.934]}>
-            <planeGeometry args={[1.24, 1.24]} />
+            <planeGeometry args={[1.32, 1.32]} />
             <meshPhysicalMaterial
               map={textures.M}
               transparent
@@ -212,10 +212,10 @@ function ProceduralM3DCube({
           </mesh>
         )}
 
-        {/* Placa Face Direita (+X) — Glifo "3" */}
+        {/* Placa Face Direita (+X) — Glifo "3" (1.32 x 1.32) */}
         {textures && (
           <mesh position={[0.934, 0, 0]} rotation={[0, Math.PI / 2, 0]}>
-            <planeGeometry args={[1.24, 1.24]} />
+            <planeGeometry args={[1.32, 1.32]} />
             <meshPhysicalMaterial
               map={textures.three}
               transparent

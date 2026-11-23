@@ -59,7 +59,7 @@ export function PortfolioSection() {
             id="heading-portfolio"
             className="mt-4 font-sans text-3xl font-bold tracking-tight text-[#131316] sm:text-4xl"
           >
-            Projetos reais em produção
+            Alguns dos sistemas desenvolvidos
           </h2>
           <p className="mt-3 text-base text-[#52525B]">
             Conheça algumas das plataformas e soluções desenvolvidas pela nossa engenharia.
