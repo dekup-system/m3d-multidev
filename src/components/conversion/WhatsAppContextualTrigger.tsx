@@ -20,9 +20,9 @@ import {
 } from "@/lib/telemetry";
 
 const PLATFORM_OPTIONS: PlatformChoice[] = [
-  "Windows + Android + Web (Integração Completa)",
-  "Windows (Desktop / ERP / Automação)",
-  "Android (Mobile / Coleta Offline-First)",
+  "Windows + Android + iOS + Web (Integração Completa)",
+  "Windows (Desktop / Sistemas Nativos)",
+  "Móvel (Android & iOS)",
   "Web (Nuvem / Painel & APIs)",
 ];
 
@@ -57,7 +57,7 @@ export interface WhatsAppContextualTriggerProps {
 export function WhatsAppContextualTrigger({
   originSection,
   label = "Falar com Engenheiro no WhatsApp",
-  defaultPlatform = "Windows + Android + Web (Integração Completa)",
+  defaultPlatform = "Windows + Android + iOS + Web (Integração Completa)",
   defaultScope = "Novo Sistema Sob Medida",
   variant = "primary",
   showQualifierToggle = false,
