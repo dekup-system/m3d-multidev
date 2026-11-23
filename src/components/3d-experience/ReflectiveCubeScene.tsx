@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
-import { Canvas, useFrame, ThreeEvent } from "@react-three/fiber";
+import { Canvas, useFrame, useThree, ThreeEvent } from "@react-three/fiber";
 import {
   RoundedBox,
   MeshReflectorMaterial,
@@ -35,7 +35,7 @@ export const CUBE_FACES: CubeFaceConfig[] = [
     id: "desenvolvimento",
     code: "FACE 02 // RIGHT",
     title: "DESENVOLVIMENTO",
-    subtitle: "WIN · ANDROID · WEB",
+    subtitle: "WIN · ANDROID · iOS · WEB",
     glyph: "3",
     position: [1.16, 0, 0],
     rotation: [0, Math.PI / 2, 0],
@@ -71,17 +71,13 @@ export const CUBE_FACES: CubeFaceConfig[] = [
     id: "contato",
     code: "FACE 06 // BOTTOM",
     title: "CONTATO",
-    subtitle: "WHATSAPP · DIAGNÓSTICO",
+    subtitle: "WHATSAPP & SUPORTE",
     glyph: "MSG",
     position: [0, -1.16, 0],
     rotation: [Math.PI / 2, 0, 0],
   },
 ];
 
-/**
- * Gera uma textura Canvas 2D de alta resolução (512x512) com fundo 100% transparente
- * para cada uma das 6 faces do dado menu principal.
- */
 function createFaceMenuTexture(
   face: CubeFaceConfig,
   isHovered: boolean
@@ -94,7 +90,6 @@ function createFaceMenuTexture(
   if (ctx) {
     ctx.clearRect(0, 0, 512, 512);
 
-    // Moldura técnica fina dentro da face (sem sair das bordas arredondadas)
     const pad = 42;
     const size = 512 - pad * 2;
     const r = 56;
@@ -120,14 +115,12 @@ function createFaceMenuTexture(
     ctx.strokeStyle = isHovered ? "#008CDD" : "rgba(19, 19, 22, 0.16)";
     ctx.stroke();
 
-    // Código da face no topo
     ctx.fillStyle = isHovered ? "#008CDD" : "#52525B";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.font = "700 20px ui-monospace, SFMono-Regular, Consolas, monospace";
     ctx.fillText(face.code, 256, 98);
 
-    // Glifo Central M / 3 / D ou símbolo tecnológico
     ctx.fillStyle = "#131316";
     ctx.font =
       face.glyph.length === 1
@@ -135,7 +128,6 @@ function createFaceMenuTexture(
         : "900 110px ui-monospace, SFMono-Regular, Consolas, monospace";
     ctx.fillText(face.glyph, 256, 232);
 
-    // Botão / Link do Menu Principal na Face
     const btnW = 350;
     const btnH = 66;
     const btnX = (512 - btnW) / 2;
@@ -162,14 +154,12 @@ function createFaceMenuTexture(
     ctx.fillStyle = isHovered ? "#008CDD" : "#131316";
     ctx.fill();
 
-    // Título do Link dentro do botão
     ctx.fillStyle = "#FFFFFF";
     ctx.font = "800 28px ui-monospace, SFMono-Regular, Consolas, monospace";
     ctx.fillText(`[ ${face.title} ]`, 256, btnY + btnH / 2 + 2);
 
-    // Subtítulo técnico abaixo do botão
     ctx.fillStyle = isHovered ? "#0A2540" : "#52525B";
-    ctx.font = "600 18px ui-monospace, SFMono-Regular, Consolas, monospace";
+    ctx.font = "600 17px ui-monospace, SFMono-Regular, Consolas, monospace";
     ctx.fillText(face.subtitle, 256, 432);
   }
 
@@ -192,11 +182,25 @@ function InteractiveCubeMesh({
   rotationOffset,
 }: InteractiveCubeMeshProps) {
   const cubeGroupRef = useRef<THREE.Group>(null);
-  const spinAccumulatorRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+  const { size } = useThree();
+
+  // Acumulador contínuo de rotação 360° (mouse movementX/Y, scroll wheel, bordas da tela e touch)
+  const continuousRotRef = useRef<{ x: number; y: number }>({ x: 0.35, y: -0.6 });
+  // Posição normalizada do cursor (-1 a +1) para manter o giro contínuo quando o mouse encosta nas bordas da tela
+  const edgeVectorRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const prevActiveRef = useRef<SectionId | null>(null);
+  const prevOffsetRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+  const touchLastRef = useRef<{ x: number; y: number } | null>(null);
+
   const [hoveredFace, setHoveredFace] = useState<SectionId | null>(null);
 
-  // Gera texturas normais e hover para cada uma das 6 faces
+  // Responsividade: ajusta escala do cubo e posição do footer em telas mobile/tablet
+  const isMobile = size.width < 640;
+  const isTablet = size.width >= 640 && size.width < 1024;
+  const mainCubeScale = isMobile ? 0.68 : isTablet ? 0.85 : 1.0;
+  const footerCubeScale = isMobile ? 0.24 : 0.3;
+  const footerYPos = isMobile ? -2.15 : -2.05;
+
   const faceTextures = useMemo(() => {
     if (typeof document === "undefined") return null;
     const map: Record<
@@ -226,18 +230,92 @@ function InteractiveCubeMesh({
     };
   }, [faceTextures]);
 
-  // Quando o usuário clica em uma face (ou clica no dado no rodapé para voltar),
-  // adiciona um giro completo (2*PI) para que o dado desça/suba girando de forma cinemática
+  // Escuta sensores globais: movimento do mouse (movementX/Y), posição nas bordas da tela,
+  // rodinha de scroll do mouse (wheel) e gestos touch no celular/tablet
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      // 1. Captação direta do sensor do mouse (movementX / movementY) para rotação contínua 360°
+      const sensitivity = e.buttons === 1 ? 0.0085 : 0.0042;
+      continuousRotRef.current.y += e.movementX * sensitivity;
+      continuousRotRef.current.x += e.movementY * sensitivity;
+
+      // 2. Detecta se o cursor chegou próximo aos limites/bordas da tela (-1 a +1)
+      const normX = (e.clientX / window.innerWidth) * 2 - 1;
+      const normY = (e.clientY / window.innerHeight) * 2 - 1;
+      edgeVectorRef.current = { x: normX, y: normY };
+    };
+
+    const handleWheel = (e: WheelEvent) => {
+      // 3. Rodinha de scroll do mouse gira o cubo continuamente em 360°
+      // Se o usuário segurar Shift ou rolar horizontalmente (trackpad), gira em Y;
+      // na rolagem normal da rodinha (deltaY), gira simultaneamente em Y e X para revelar todas as 6 faces!
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+        continuousRotRef.current.y += e.deltaX * 0.0045;
+      } else {
+        continuousRotRef.current.x += e.deltaY * 0.0038;
+        continuousRotRef.current.y += e.deltaY * 0.0028;
+      }
+    };
+
+    const handleTouchStart = (e: TouchEvent) => {
+      const t = e.touches[0];
+      if (t) {
+        touchLastRef.current = { x: t.clientX, y: t.clientY };
+      }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      const t = e.touches[0];
+      if (t && touchLastRef.current) {
+        const dx = t.clientX - touchLastRef.current.x;
+        const dy = t.clientY - touchLastRef.current.y;
+        continuousRotRef.current.y += dx * 0.0075;
+        continuousRotRef.current.x += dy * 0.0075;
+        touchLastRef.current = { x: t.clientX, y: t.clientY };
+      }
+    };
+
+    const handleTouchEnd = () => {
+      touchLastRef.current = null;
+      edgeVectorRef.current = { x: 0, y: 0 };
+    };
+
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    window.addEventListener("wheel", handleWheel, { passive: true });
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("touchmove", handleTouchMove, { passive: true });
+    window.addEventListener("touchend", handleTouchEnd, { passive: true });
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, []);
+
+  // Quando o botão "GIRAR DADO" do rodapé é clicado, soma o delta ao acumulador contínuo
+  useEffect(() => {
+    const dx = rotationOffset.x - prevOffsetRef.current.x;
+    const dy = rotationOffset.y - prevOffsetRef.current.y;
+    if (dx !== 0 || dy !== 0) {
+      continuousRotRef.current.x += dx;
+      continuousRotRef.current.y += dy;
+      prevOffsetRef.current = rotationOffset;
+    }
+  }, [rotationOffset]);
+
+  // Giro cinemático ao descer para o footer ou retornar ao centro
   useEffect(() => {
     if (activeSection !== prevActiveRef.current) {
       const direction = activeSection !== null ? 1 : -1;
-      spinAccumulatorRef.current.y += direction * Math.PI * 2;
-      spinAccumulatorRef.current.x += direction * Math.PI;
+      continuousRotRef.current.y += direction * Math.PI * 2;
+      continuousRotRef.current.x += direction * Math.PI;
       prevActiveRef.current = activeSection;
     }
   }, [activeSection]);
 
-  // Atualiza cursor ao passar sobre as faces do dado
   useEffect(() => {
     document.body.style.cursor = hoveredFace ? "pointer" : "auto";
     return () => {
@@ -250,28 +328,37 @@ function InteractiveCubeMesh({
 
     const isDockedInFooter = activeSection !== null;
 
-    // Posição Y e Escala:
-    // - No modo Menu Principal: grande no centro da tela (Y = 0.25, Scale = 1.0)
-    // - Ao clicar em um link: desce girando e fica pequeno no footer (Y = -2.05, Scale = 0.30)
+    // Se o cursor do mouse estiver estacionado próximo ao fim/limites da tela (|x| > 0.72 ou |y| > 0.72),
+    // o cubo CONTINUA girando suavemente naquela direção sem travar no fim da tela!
+    const edgeThreshold = 0.72;
+    const edgeSpeed = isDockedInFooter ? 0.6 : 1.45;
+
+    if (Math.abs(edgeVectorRef.current.x) > edgeThreshold) {
+      const signX = Math.sign(edgeVectorRef.current.x);
+      const intensityX =
+        (Math.abs(edgeVectorRef.current.x) - edgeThreshold) / (1 - edgeThreshold);
+      continuousRotRef.current.y += signX * intensityX * edgeSpeed * delta;
+    }
+
+    if (Math.abs(edgeVectorRef.current.y) > edgeThreshold) {
+      const signY = Math.sign(edgeVectorRef.current.y);
+      const intensityY =
+        (Math.abs(edgeVectorRef.current.y) - edgeThreshold) / (1 - edgeThreshold);
+      continuousRotRef.current.x += signY * intensityY * edgeSpeed * delta;
+    }
+
+    // Quando o dado está pequeno no footer, mantém uma rotação orbital leve contínua
+    if (isDockedInFooter) {
+      continuousRotRef.current.y += delta * 0.45;
+    }
+
     const targetY = isDockedInFooter
-      ? -2.05 + Math.sin(state.clock.elapsedTime * 2.2) * 0.03
-      : 0.25 + Math.sin(state.clock.elapsedTime * 1.4) * 0.05;
+      ? footerYPos + Math.sin(state.clock.elapsedTime * 2.2) * 0.03
+      : (isMobile ? 0.15 : 0.25) + Math.sin(state.clock.elapsedTime * 1.4) * 0.05;
 
-    const targetScale = isDockedInFooter ? 0.3 : 1.0;
+    const targetScale = isDockedInFooter ? footerCubeScale : mainCubeScale;
 
-    // Resposta ao mouse + offset de rotação para inspecionar todas as 6 faces
-    const pointerX = state.pointer.x * (isDockedInFooter ? 0.4 : 0.95);
-    const pointerY = state.pointer.y * (isDockedInFooter ? 0.3 : 0.75);
-
-    const baseRotX = 0.35 + rotationOffset.x - pointerY + spinAccumulatorRef.current.x;
-    const baseRotY =
-      -0.6 +
-      rotationOffset.y +
-      pointerX +
-      spinAccumulatorRef.current.y +
-      (isDockedInFooter ? state.clock.elapsedTime * 0.45 : 0);
-
-    const speed = Math.min(1, delta * 4.8);
+    const speed = Math.min(1, delta * 6.0);
 
     cubeGroupRef.current.position.y = THREE.MathUtils.lerp(
       cubeGroupRef.current.position.y,
@@ -285,19 +372,18 @@ function InteractiveCubeMesh({
 
     cubeGroupRef.current.rotation.x = THREE.MathUtils.lerp(
       cubeGroupRef.current.rotation.x,
-      baseRotX,
+      continuousRotRef.current.x,
       speed
     );
     cubeGroupRef.current.rotation.y = THREE.MathUtils.lerp(
       cubeGroupRef.current.rotation.y,
-      baseRotY,
+      continuousRotRef.current.y,
       speed
     );
   });
 
   const handleFaceClick = (e: ThreeEvent<MouseEvent>, faceId: SectionId) => {
     e.stopPropagation();
-    // Se o dado já está pequeno no footer, clicar nele retrocede a animação e volta ao menu central!
     if (activeSection !== null) {
       onSelectSection(null);
     } else {
@@ -310,7 +396,6 @@ function InteractiveCubeMesh({
       ref={cubeGroupRef}
       position={[0, 0.25, 0]}
       onClick={(e) => {
-        // Caso o usuário clique no corpo do cubo quando ele está pequeno no footer, retorna ao centro
         if (activeSection !== null) {
           e.stopPropagation();
           onSelectSection(null);
@@ -374,10 +459,6 @@ export interface ReflectiveCubeSceneProps {
   rotationOffset: { x: number; y: number };
 }
 
-/**
- * ReflectiveCubeScene — Ambiente 3D claro off-white com piso reflexivo espelhado
- * e o grande cubo branco central de 6 faces.
- */
 export function ReflectiveCubeScene({
   activeSection,
   onSelectSection,
@@ -396,7 +477,6 @@ export function ReflectiveCubeScene({
           outputColorSpace: THREE.SRGBColorSpace,
         }}
       >
-        {/* Neblina suave off-white para fundir o piso reflexivo no horizonte */}
         <fog attach="fog" args={["#F6F6F7", 7, 18]} />
 
         <ambientLight intensity={0.95} />
@@ -425,7 +505,6 @@ export function ReflectiveCubeScene({
           />
         </Environment>
 
-        {/* Grande Cubo Branco Interativo (Menu Principal -> Pequeno no Footer) */}
         <InteractiveCubeMesh
           activeSection={activeSection}
           onSelectSection={onSelectSection}

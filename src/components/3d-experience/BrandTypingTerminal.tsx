@@ -5,7 +5,7 @@ import Image from "next/image";
 
 const CODE_SEQUENCE = [
   'const brand = await Engine.boot("M3D MULTIDEV");',
-  'brand.link(["WINDOWS", "ANDROID", "WEB"]); // status: ONLINE',
+  'brand.link(["WINDOWS", "ANDROID", "iOS", "WEB"]); // status: ONLINE',
 ];
 
 export type SectionId =
@@ -31,9 +31,9 @@ const QUICK_FACES: { id: SectionId; label: string; code: string }[] = [
 ];
 
 /**
- * BrandTypingTerminal — Cabeçalho tecnológico fixo no topo da tela estática:
+ * BrandTypingTerminal — Cabeçalho tecnológico responsivo no topo da tela estática:
  * - Formação da marca M3D MULTIDEV em digitação de caracteres em linha de programação.
- * - Indicador das 6 faces do cubo para acesso direto ou leitura da face ativa.
+ * - Menu rápido das 6 faces do cubo visível tanto em desktop quanto em dispositivos móveis.
  */
 export function BrandTypingTerminal({
   activeSection,
@@ -59,7 +59,7 @@ export function BrandTypingTerminal({
       } else {
         clearInterval(typeInterval);
       }
-    }, 32);
+    }, 30);
 
     const blinkInterval = setInterval(() => {
       setCursorVisible((prev) => !prev);
@@ -72,14 +72,14 @@ export function BrandTypingTerminal({
   }, []);
 
   return (
-    <header className="relative z-20 flex w-full items-center justify-between px-4 pt-3.5 pb-2 sm:px-8 sm:pt-5">
+    <header className="relative z-20 flex w-full flex-col gap-2 px-3 pt-3 pb-1 sm:px-8 sm:pt-5 lg:flex-row lg:items-center lg:justify-between">
       {/* Bloco Esquerdo: Logo Original + Digitação em Linha de Programação */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2.5 sm:gap-3">
         <button
           type="button"
           onClick={() => onSelectSection(null)}
           title="Voltar ao Cubo Menu Principal"
-          className="group relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[#131316]/15 bg-[#131316] p-1 shadow-xs transition-transform hover:scale-105"
+          className="group relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[#131316]/15 bg-[#131316] p-1 shadow-xs transition-transform hover:scale-105 sm:h-10 sm:w-10"
         >
           <Image
             src="/logo-m3d-original.png"
@@ -91,26 +91,26 @@ export function BrandTypingTerminal({
           />
         </button>
 
-        <div className="flex flex-col rounded-xl border border-[#E4E4E7]/90 bg-white/75 px-3 py-1.5 backdrop-blur-md">
+        <div className="flex min-w-0 flex-1 flex-col rounded-xl border border-[#E4E4E7]/90 bg-white/80 px-2.5 py-1.5 backdrop-blur-md sm:flex-initial sm:px-3">
           <div className="flex items-center gap-2">
-            <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#008CDD]" />
-            <span className="font-mono text-[10px] font-bold tracking-[0.18em] text-[#131316] uppercase">
-              M3D MULTIDEV // SYS.CORE
+            <span className="inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-[#008CDD]" />
+            <span className="truncate font-mono text-[9px] font-bold tracking-[0.16em] text-[#131316] uppercase sm:text-[10px]">
+              M3D MULTIDEV // WINDOWS · ANDROID · iOS · WEB
             </span>
           </div>
-          <div className="mt-0.5 font-mono text-[10px] leading-tight text-[#0A2540] sm:text-[11px]">
+          <div className="mt-0.5 truncate font-mono text-[9px] leading-tight text-[#0A2540] sm:text-[11px]">
             <span className="text-[#008CDD]">&gt; </span>
             <span>{typedLine1}</span>
             {typedLine2.length === 0 && (
               <span
-                className={`ml-0.5 inline-block h-3 w-1.5 align-middle bg-[#008CDD] ${
+                className={`ml-0.5 inline-block h-2.5 w-1.5 align-middle bg-[#008CDD] ${
                   cursorVisible ? "opacity-100" : "opacity-0"
                 }`}
               />
             )}
           </div>
           {typedLine2.length > 0 && (
-            <div className="hidden font-mono text-[10px] leading-tight text-[#52525B] sm:block">
+            <div className="truncate font-mono text-[9px] leading-tight text-[#52525B] sm:text-[10px]">
               <span className="text-[#008CDD]">&gt; </span>
               <span>{typedLine2}</span>
               <span
@@ -123,10 +123,10 @@ export function BrandTypingTerminal({
         </div>
       </div>
 
-      {/* Bloco Direito: HUD das 6 Faces do Dado */}
+      {/* Bloco Direito: HUD das 6 Faces do Dado (Responsivo em Mobile, Tablet e Desktop) */}
       <nav
         aria-label="Faces do Cubo M3D"
-        className="hidden items-center gap-1 rounded-xl border border-[#E4E4E7]/90 bg-white/75 p-1 backdrop-blur-md lg:flex"
+        className="flex flex-wrap items-center justify-center gap-1 rounded-xl border border-[#E4E4E7]/90 bg-white/80 p-1 backdrop-blur-md"
       >
         {QUICK_FACES.map((face) => {
           const isActive = activeSection === face.id;
@@ -135,13 +135,13 @@ export function BrandTypingTerminal({
               key={face.id}
               type="button"
               onClick={() => onSelectSection(isActive ? null : face.id)}
-              className={`rounded-lg px-2.5 py-1 font-mono text-[10px] font-semibold tracking-wider transition-all ${
+              className={`rounded-lg px-2 py-1 font-mono text-[9px] font-semibold tracking-wider transition-all sm:px-2.5 sm:text-[10px] ${
                 isActive
                   ? "bg-[#008CDD] text-white shadow-2xs"
                   : "text-[#52525B] hover:bg-[#F4F4F6] hover:text-[#131316]"
               }`}
             >
-              <span className="mr-1 opacity-60">{face.code}.</span>
+              <span className="mr-0.5 opacity-60">{face.code}.</span>
               {face.label}
             </button>
           );

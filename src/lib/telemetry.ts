@@ -1,14 +1,8 @@
-/**
- * Telemetria GA4 / GTM e Construção de URL WhatsApp Business compatível com a LGPD.
- * - NENHUM dado pessoal sensível (PII) é coletado ou enviado ao dataLayer.
- * - Utiliza https://api.whatsapp.com/send?phone=...&text=... com encodeURIComponent
- *   para preservar acentuação em português em desktop e mobile.
- */
-
 export type PlatformChoice =
+  | "Windows + Android + iOS + Web (Integração Completa)"
   | "Windows + Android + Web (Integração Completa)"
-  | "Windows (Desktop / ERP / Automação)"
-  | "Android (Mobile / Coleta Offline-First)"
+  | "Windows (Desktop / Sistemas Nativos)"
+  | "Móvel (Android & iOS)"
   | "Web (Nuvem / Painel & APIs)";
 
 export type ScopeChoice =
@@ -37,10 +31,6 @@ declare global {
   }
 }
 
-/**
- * Número configurável via variável de ambiente NEXT_PUBLIC_WHATSAPP_NUMBER
- * ou fallback explícito pronto para configuração em produção na Vercel.
- */
 export const DEFAULT_WHATSAPP_NUMBER =
   process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "5511999999999";
 
@@ -65,10 +55,6 @@ export function getUtmParams(): {
   };
 }
 
-/**
- * Dispara evento `generate_lead` e `whatsapp_click` no `window.dataLayer` (GTM / GA4)
- * contendo estritamente metadados técnicos não-PII (LGPD Art. 6º — minimização).
- */
 export function trackWhatsAppConversion(metadata: WhatsAppLeadMetadata): void {
   if (typeof window === "undefined") return;
 
@@ -94,9 +80,6 @@ export function trackWhatsAppConversion(metadata: WhatsAppLeadMetadata): void {
   });
 }
 
-/**
- * Monta o link oficial do WhatsApp Business API sem corrupção de acentos.
- */
 export function buildWhatsAppUrl(metadata: WhatsAppLeadMetadata): string {
   const utms = getUtmParams();
   const cleanPhone = DEFAULT_WHATSAPP_NUMBER.replace(/\D/g, "");
@@ -104,13 +87,10 @@ export function buildWhatsAppUrl(metadata: WhatsAppLeadMetadata): string {
   const lines = [
     "Olá, equipe de engenharia da *M3D Multidev*!",
     "",
-    "Gostaria de solicitar um diagnóstico técnico para um projeto sob medida:",
+    "Gostaria de conversar sobre um projeto sob medida:",
     `• *Plataformas:* ${metadata.selected_platforms}`,
     `• *Escopo:* ${metadata.project_scope}`,
-    `• *Prazo alvo:* ${metadata.target_timeline || "Imediato (Urgência Operacional)"}`,
-    `• *Seção de origem:* ${metadata.origin_section} (UTM: ${utms.utm_source})`,
-    "",
-    "Podemos agendar uma conversa técnica sob NDA?",
+    `• *Origem:* ${metadata.origin_section} (${utms.utm_source})`,
   ];
 
   const encodedText = encodeURIComponent(lines.join("\n"));

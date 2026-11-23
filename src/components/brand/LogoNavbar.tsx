@@ -46,7 +46,7 @@ export function LogoNavbar({ className, href = "#topo" }: LogoNavbarProps) {
           />
         </div>
         <span className="font-mono text-[10px] font-medium tracking-wider text-[#52525B] uppercase">
-          Windows · Android · Web
+          Windows · Android · iOS · Web
         </span>
       </div>
     </Link>

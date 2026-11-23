@@ -14,6 +14,7 @@ import {
   Sparkles,
   Compass,
   CheckCircle2,
+  Mail,
 } from "lucide-react";
 import type { SectionId } from "./BrandTypingTerminal";
 import { buildWhatsAppUrl, trackWhatsAppConversion } from "@/lib/telemetry";
@@ -42,14 +43,14 @@ const PORTFOLIO_ITEMS = [
   {
     name: "Kitefy",
     tag: "MARKETING ORGÂNICO & GEO",
-    url: "https://kitefy.vercel.app",
-    display: "kitefy.vercel.app",
+    url: "https://www.kitefy.com.br",
+    display: "kitefy.com.br",
     desc: "Estúdio web ágil que extrai o perfil da marca via URL e entrega roteiros A/B, carrosséis e artigos otimizados para buscadores e IAs (GEO) sem exigir OAuth social.",
   },
 ];
 
 /**
- * CenterSectionPanel — Painel central enxuto com texto pequeno e fonte tecnológica (Geist Mono)
+ * CenterSectionPanel — Painel central enxuto e responsivo com texto pequeno e fonte tecnológica (Geist Mono)
  * que surge no centro da tela estática quando o dado desce girando para o footer.
  */
 export function CenterSectionPanel({
@@ -60,14 +61,14 @@ export function CenterSectionPanel({
   const handleWhatsAppClick = (origin: string) => {
     trackWhatsAppConversion({
       origin_section: origin,
-      selected_platforms: "Windows + Android + Web (Integração Completa)",
+      selected_platforms: "Windows + Android + iOS + Web (Integração Completa)",
       project_scope: "Novo Sistema Sob Medida",
     });
   };
 
   const whatsappUrl = buildWhatsAppUrl({
     origin_section: `cube_face_${activeSection ?? "main"}`,
-    selected_platforms: "Windows + Android + Web (Integração Completa)",
+    selected_platforms: "Windows + Android + iOS + Web (Integração Completa)",
     project_scope: "Novo Sistema Sob Medida",
   });
 
@@ -81,12 +82,12 @@ export function CenterSectionPanel({
           exit={{ opacity: 0, scale: 0.94, y: -12 }}
           transition={{ duration: 0.28, ease: "easeOut" }}
           aria-live="polite"
-          className="pointer-events-auto relative z-20 mx-auto w-full max-w-2xl px-4"
+          className="pointer-events-auto relative z-20 mx-auto max-h-[72dvh] w-full max-w-2xl overflow-y-auto px-3 sm:max-h-none sm:overflow-visible sm:px-4"
         >
-          <div className="rounded-2xl border border-[#E4E4E7] bg-white/88 p-5 shadow-[0_12px_40px_-8px_rgba(10,37,64,0.12)] backdrop-blur-xl sm:p-6">
+          <div className="rounded-2xl border border-[#E4E4E7] bg-white/90 p-4 shadow-[0_12px_40px_-8px_rgba(10,37,64,0.12)] backdrop-blur-xl sm:p-6">
             {/* Barra de Topo do Terminal Central */}
-            <div className="flex items-center justify-between border-b border-[#E4E4E7] pb-3">
-              <div className="flex items-center gap-2 font-mono text-[11px] font-bold tracking-wider text-[#008CDD] uppercase">
+            <div className="flex items-center justify-between border-b border-[#E4E4E7] pb-2.5 sm:pb-3">
+              <div className="flex items-center gap-2 font-mono text-[10px] font-bold tracking-wider text-[#008CDD] uppercase sm:text-[11px]">
                 <span className="inline-block h-2 w-2 rounded-full bg-[#008CDD]" />
                 <span>M3D.NODE // {activeSection.toUpperCase()}</span>
               </div>
@@ -103,42 +104,48 @@ export function CenterSectionPanel({
 
             {/* 01. FACE: INICIAR */}
             {activeSection === "iniciar" && (
-              <div className="mt-4 space-y-3.5 font-mono text-xs">
+              <div className="mt-3.5 space-y-3 font-mono text-xs sm:mt-4 sm:space-y-3.5">
                 <div className="inline-flex items-center gap-1.5 rounded-md bg-[#008CDD]/10 px-2.5 py-1 text-[10px] font-semibold text-[#008CDD]">
                   <Sparkles className="h-3 w-3" />
-                  <span>WINDOWS · ANDROID · WEB — ECOSSISTEMA INTEGRADO</span>
+                  <span>WINDOWS · ANDROID · iOS · WEB — ECOSSISTEMA INTEGRADO</span>
                 </div>
 
-                <h1 className="font-sans text-xl font-bold tracking-tight text-[#131316] sm:text-2xl">
-                  Engenharia de softwares sob medida conectados em tempo real.
+                <h1 className="font-sans text-lg font-bold tracking-tight text-[#131316] sm:text-2xl">
+                  Onde ideias extraordinárias se tornam tecnologia inteligente.
                 </h1>
 
                 <p className="font-mono text-[11px] leading-relaxed text-[#52525B]">
                   A <strong className="text-[#131316]">M3D MULTIDEV</strong> projeta e
-                  desenvolve sistemas que unem operação local no{" "}
-                  <strong className="text-[#0A2540]">Windows</strong>, mobilidade em
-                  campo no <strong className="text-[#008CDD]">Android</strong> e gestão em
-                  nuvem na <strong className="text-[#0A2540]">Web</strong> sem planilhas
-                  paralelas ou retrabalho.
+                  desenvolve sistemas sob medida que unem softwares desktop no{" "}
+                  <strong className="text-[#0A2540]">Windows</strong>, experiência{" "}
+                  <strong className="text-[#008CDD]">Móvel (Android e iOS)</strong> e
+                  gestão inteligente em nuvem na{" "}
+                  <strong className="text-[#0A2540]">Web</strong>.
                 </p>
 
                 <div className="grid grid-cols-3 gap-2 pt-1">
                   <div className="rounded-xl border border-[#E4E4E7] bg-[#FAFAFA] p-2.5">
-                    <div className="text-[10px] font-bold text-[#008CDD]">01 // LOCAL</div>
-                    <div className="mt-0.5 text-[11px] font-semibold text-[#131316]">
-                      Desktop Windows
+                    <div className="text-[9px] font-bold text-[#008CDD] sm:text-[10px]">
+                      01 // DESKTOP
+                    </div>
+                    <div className="mt-0.5 text-[10px] font-semibold text-[#131316] sm:text-[11px]">
+                      Sistemas Windows
                     </div>
                   </div>
                   <div className="rounded-xl border border-[#E4E4E7] bg-[#FAFAFA] p-2.5">
-                    <div className="text-[10px] font-bold text-[#008CDD]">02 // CAMPO</div>
-                    <div className="mt-0.5 text-[11px] font-semibold text-[#131316]">
-                      Mobile Android
+                    <div className="text-[9px] font-bold text-[#008CDD] sm:text-[10px]">
+                      02 // MÓVEL
+                    </div>
+                    <div className="mt-0.5 text-[10px] font-semibold text-[#131316] sm:text-[11px]">
+                      Android &amp; iOS
                     </div>
                   </div>
                   <div className="rounded-xl border border-[#E4E4E7] bg-[#FAFAFA] p-2.5">
-                    <div className="text-[10px] font-bold text-[#008CDD]">03 // NUVEM</div>
-                    <div className="mt-0.5 text-[11px] font-semibold text-[#131316]">
-                      Painel & APIs Web
+                    <div className="text-[9px] font-bold text-[#008CDD] sm:text-[10px]">
+                      03 // NUVEM
+                    </div>
+                    <div className="mt-0.5 text-[10px] font-semibold text-[#131316] sm:text-[11px]">
+                      Painel &amp; APIs Web
                     </div>
                   </div>
                 </div>
@@ -149,14 +156,14 @@ export function CenterSectionPanel({
                     onClick={() => onNavigateFace("projetos")}
                     className="rounded-lg border border-[#E4E4E7] bg-white px-3 py-1.5 font-mono text-[11px] font-semibold text-[#131316] hover:border-[#008CDD] hover:text-[#008CDD]"
                   >
-                    VER PROJETOS REAIS →
+                    VER PROJETOS →
                   </button>
                   <button
                     type="button"
                     onClick={() => onNavigateFace("contato")}
                     className="rounded-lg bg-[#131316] px-3.5 py-1.5 font-mono text-[11px] font-semibold text-white hover:bg-[#008CDD]"
                   >
-                    INICIAR DIAGNÓSTICO
+                    FALAR COM A M3D
                   </button>
                 </div>
               </div>
@@ -164,9 +171,9 @@ export function CenterSectionPanel({
 
             {/* 02. FACE: DESENVOLVIMENTO */}
             {activeSection === "desenvolvimento" && (
-              <div className="mt-4 space-y-3 font-mono text-xs">
+              <div className="mt-3.5 space-y-3 font-mono text-xs sm:mt-4">
                 <p className="text-[11px] text-[#52525B]">
-                  Arquitetura multiplataforma unificada do hardware local à nuvem:
+                  Engenharia multiplataforma integrada para alto desempenho:
                 </p>
 
                 <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
@@ -176,42 +183,43 @@ export function CenterSectionPanel({
                       <span>WINDOWS</span>
                     </div>
                     <p className="mt-1.5 text-[10px] leading-relaxed text-[#52525B]">
-                      ERPs, PDVs, automação local, leitura de portas USB/Serial, balanças,
-                      impressoras e IA offline.
+                      Softwares desktop nativos de alta performance, processamento com IA
+                      local offline, diagnóstico de redes e ferramentas corporativas
+                      avançadas.
                     </p>
                   </div>
 
                   <div className="rounded-xl border border-[#E4E4E7] bg-[#FAFAFA] p-3">
                     <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#131316]">
                       <Smartphone className="h-3.5 w-3.5 text-[#008CDD]" />
-                      <span>ANDROID</span>
+                      <span>MÓVEL (ANDROID &amp; iOS)</span>
                     </div>
                     <p className="mt-1.5 text-[10px] leading-relaxed text-[#52525B]">
-                      Apps corporativos e coletores de dados Offline-First com sincronia
-                      automática, câmera e QR/Barcode.
+                      Aplicativos móveis modernos e fluidos para Android e iOS, operação
+                      online/offline, notificações em tempo real e sincronia imediata.
                     </p>
                   </div>
 
                   <div className="rounded-xl border border-[#E4E4E7] bg-[#FAFAFA] p-3">
                     <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#131316]">
                       <Globe className="h-3.5 w-3.5 text-[#008CDD]" />
-                      <span>WEB & NUVEM</span>
+                      <span>WEB &amp; NUVEM</span>
                     </div>
                     <p className="mt-1.5 text-[10px] leading-relaxed text-[#52525B]">
-                      Dashboards gerenciais em tempo real, plataformas SaaS, portais B2B e
-                      integração via APIs.
+                      Plataformas SaaS, dashboards gerenciais em tempo real, automação com
+                      inteligência artificial e integração via APIs escaláveis.
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between border-t border-[#E4E4E7] pt-3 text-[10px] text-[#52525B]">
-                  <span>SYNC: WINDOWS ↔ ANDROID ↔ WEB</span>
+                  <span>SYNC: WINDOWS ↔ ANDROID / iOS ↔ WEB</span>
                   <button
                     type="button"
                     onClick={() => onNavigateFace("contato")}
                     className="font-semibold text-[#008CDD] hover:underline"
                   >
-                    SOLICITAR ARQUITETURA →
+                    SOLICITAR PROJETO →
                   </button>
                 </div>
               </div>
@@ -219,15 +227,15 @@ export function CenterSectionPanel({
 
             {/* 03. FACE: MISSÃO */}
             {activeSection === "missao" && (
-              <div className="mt-4 space-y-3 font-mono text-xs">
+              <div className="mt-3.5 space-y-3 font-mono text-xs sm:mt-4">
                 <div className="flex items-center gap-2 text-[11px] font-bold text-[#131316]">
                   <Compass className="h-4 w-4 text-[#008CDD]" />
                   <span>COMPROMISSO TÉCNICO M3D MULTIDEV</span>
                 </div>
 
                 <p className="text-[11px] leading-relaxed text-[#52525B]">
-                  Eliminar o abismo entre a operação física e a gestão digital, entregando
-                  software rápido, documentado e sem aprisionamento tecnológico.
+                  Transformar desafios complexos em softwares intuitivos, rápidos e
+                  conectados no desktop, nos dispositivos móveis e na nuvem.
                 </p>
 
                 <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
@@ -236,16 +244,16 @@ export function CenterSectionPanel({
                       01 // PREVISIBILIDADE
                     </div>
                     <p className="mt-1 text-[10px] leading-relaxed text-[#52525B]">
-                      Entregas em etapas visíveis e testáveis com cronograma claro.
+                      Entregas em etapas visíveis e testáveis com cronograma transparente.
                     </p>
                   </div>
                   <div className="rounded-xl border border-[#E4E4E7] bg-[#FAFAFA] p-3">
                     <div className="text-[10px] font-bold text-[#008CDD]">
-                      02 // ESTABILIDADE
+                      02 // ALTA PERFORMANCE
                     </div>
                     <p className="mt-1 text-[10px] leading-relaxed text-[#52525B]">
-                      Código limpo, arquitetura tipada e validação rigorosa antes de cada
-                      release.
+                      Código limpo, arquitetura moderna e validação rigorosa em cada
+                      atualização.
                     </p>
                   </div>
                   <div className="rounded-xl border border-[#E4E4E7] bg-[#FAFAFA] p-3">
@@ -253,7 +261,8 @@ export function CenterSectionPanel({
                       03 // AUTONOMIA
                     </div>
                     <p className="mt-1 text-[10px] leading-relaxed text-[#52525B]">
-                      Zero vendor lock-in: evolução contínua e titularidade garantida.
+                      Zero aprisionamento técnico: evolução contínua e titularidade
+                      garantida.
                     </p>
                   </div>
                 </div>
@@ -262,7 +271,7 @@ export function CenterSectionPanel({
 
             {/* 04. FACE: PROJETOS */}
             {activeSection === "projetos" && (
-              <div className="mt-4 space-y-3 font-mono text-xs">
+              <div className="mt-3.5 space-y-3 font-mono text-xs sm:mt-4">
                 <p className="text-[11px] font-semibold text-[#131316]">
                   Alguns dos sistemas desenvolvidos:
                 </p>
@@ -299,21 +308,21 @@ export function CenterSectionPanel({
 
             {/* 05. FACE: SEGURANÇA */}
             {activeSection === "seguranca" && (
-              <div className="mt-4 space-y-3 font-mono text-xs">
+              <div className="mt-3.5 space-y-3 font-mono text-xs sm:mt-4">
                 <div className="flex items-center gap-2 text-[11px] font-bold text-[#131316]">
                   <ShieldCheck className="h-4 w-4 text-[#008CDD]" />
-                  <span>SEGURANÇA, PROPRIEDADE DO CÓDIGO & SLA</span>
+                  <span>SEGURANÇA, PROPRIEDADE DO CÓDIGO &amp; SLA</span>
                 </div>
 
                 <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                   <div className="rounded-xl border border-[#E4E4E7] bg-[#FAFAFA] p-3">
                     <div className="flex items-center gap-1.5 text-[10px] font-bold text-[#131316]">
                       <CheckCircle2 className="h-3.5 w-3.5 text-[#008CDD]" />
-                      <span>CRIPTOGRAFIA & OWASP</span>
+                      <span>CRIPTOGRAFIA &amp; OWASP</span>
                     </div>
                     <p className="mt-1 text-[10px] leading-relaxed text-[#52525B]">
                       Tráfego TLS 1.3, bancos protegidos com AES-256 e verificação de
-                      segurança em Windows, Android e Web.
+                      segurança em Windows, Android, iOS e Web.
                     </p>
                   </div>
 
@@ -342,11 +351,11 @@ export function CenterSectionPanel({
                   <div className="rounded-xl border border-[#E4E4E7] bg-[#FAFAFA] p-3">
                     <div className="flex items-center gap-1.5 text-[10px] font-bold text-[#131316]">
                       <CheckCircle2 className="h-3.5 w-3.5 text-[#008CDD]" />
-                      <span>SLA 99,9% & SUPORTE</span>
+                      <span>SLA 99,9% &amp; SUPORTE</span>
                     </div>
                     <p className="mt-1 text-[10px] leading-relaxed text-[#52525B]">
-                      Alta disponibilidade monitorada e atendimento técnico ágil em
-                      horário comercial.
+                      Alta disponibilidade monitorada e suporte técnico dedicado para a
+                      sua operação.
                     </p>
                   </div>
                 </div>
@@ -362,35 +371,37 @@ export function CenterSectionPanel({
 
             {/* 06. FACE: CONTATO */}
             {activeSection === "contato" && (
-              <div className="mt-4 space-y-3.5 font-mono text-xs">
+              <div className="mt-3.5 space-y-3.5 font-mono text-xs sm:mt-4">
                 <div>
                   <div className="text-[11px] font-bold text-[#131316]">
-                    CANAL DIRETO DE ENGENHARIA // WHATSAPP BUSINESS
+                    CANAIS DIRETOS // M3D MULTIDEV
                   </div>
                   <p className="mt-1 text-[11px] leading-relaxed text-[#52525B]">
-                    Converse diretamente com um engenheiro da M3D Multidev para avaliar seu
-                    sistema Windows, aplicativo Android ou plataforma Web.
+                    Converse diretamente com a nossa engenharia para desenvolver ou evoluir
+                    seu sistema Windows, aplicativo Móvel (Android e iOS) ou plataforma
+                    Web.
                   </p>
                 </div>
 
-                <div className="rounded-xl border border-[#E4E4E7] bg-[#FAFAFA] p-3 text-[10px] text-[#52525B]">
-                  <div>• HORÁRIO: Segunda a Sexta, 08h30 às 18h00 (BRT)</div>
-                  <div className="mt-1">
-                    • PRIVACIDADE: Sem inclusão em listas sem consentimento (LGPD).
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
+                <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
                   <a
                     href={whatsappUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => handleWhatsAppClick("cube_contact_face")}
-                    className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-[#008CDD] px-4 py-2.5 font-mono text-xs font-bold text-white transition-colors hover:bg-[#0077BE]"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#008CDD] px-4 py-3 font-mono text-xs font-bold text-white transition-colors hover:bg-[#0077BE]"
                   >
-                    <MessageSquare className="h-4 w-4" />
-                    <span>INICIAR CONVERSA NO WHATSAPP</span>
-                    <ArrowUpRight className="h-4 w-4" />
+                    <MessageSquare className="h-4 w-4 shrink-0" />
+                    <span>CONVERSAR NO WHATSAPP</span>
+                    <ArrowUpRight className="h-4 w-4 shrink-0" />
+                  </a>
+
+                  <a
+                    href="mailto:suporte@m3dmultidev.com.br"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#E4E4E7] bg-[#FAFAFA] px-4 py-3 font-mono text-xs font-bold text-[#131316] transition-colors hover:border-[#008CDD] hover:bg-white hover:text-[#008CDD]"
+                  >
+                    <Mail className="h-4 w-4 shrink-0 text-[#008CDD]" />
+                    <span className="truncate">suporte@m3dmultidev.com.br</span>
                   </a>
                 </div>
               </div>

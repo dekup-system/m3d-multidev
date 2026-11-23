@@ -83,11 +83,11 @@ export function Static3DExperience() {
       </main>
 
       {/* 5. Footer da Página Estática: Controles do Cubo ou Gatilho sobre o Cubo Pequeno */}
-      <footer className="relative z-20 flex w-full flex-col items-center justify-center pb-4 sm:pb-5">
+      <footer className="relative z-20 flex w-full flex-col items-center justify-center px-3 pb-3 sm:pb-5">
         {activeSection === null ? (
-          <div className="flex flex-wrap items-center justify-center gap-2 rounded-2xl border border-[#E4E4E7]/90 bg-white/80 px-4 py-2 shadow-2xs backdrop-blur-md">
-            <span className="font-mono text-[10px] font-medium text-[#52525B]">
-              MOVA O MOUSE PARA GIRAR O CUBO · CLIQUE EM UMA FACE PARA ABRIR
+          <div className="flex flex-wrap items-center justify-center gap-2 rounded-2xl border border-[#E4E4E7]/90 bg-white/80 px-3 py-1.5 text-center shadow-2xs backdrop-blur-md sm:px-4 sm:py-2">
+            <span className="font-mono text-[9px] font-medium text-[#52525B] sm:text-[10px]">
+              MOVA O MOUSE / SCROLL OU TOQUE PARA GIRAR 360° · CLIQUE EM UMA FACE
             </span>
             <button
               type="button"
@@ -102,7 +102,7 @@ export function Static3DExperience() {
           <button
             type="button"
             onClick={() => setActiveSection(null)}
-            className="group inline-flex items-center gap-2 rounded-full border border-[#008CDD]/40 bg-white/85 px-4 py-1.5 font-mono text-[10px] font-bold text-[#0A2540] shadow-xs backdrop-blur-md transition-all hover:border-[#008CDD] hover:bg-[#008CDD] hover:text-white"
+            className="group inline-flex items-center gap-2 rounded-full border border-[#008CDD]/40 bg-white/85 px-3.5 py-1.5 font-mono text-[9px] font-bold text-[#0A2540] shadow-xs backdrop-blur-md transition-all hover:border-[#008CDD] hover:bg-[#008CDD] hover:text-white sm:px-4 sm:text-[10px]"
           >
             <Box className="h-3.5 w-3.5 text-[#008CDD] group-hover:text-white" />
             <span>CLIQUE NO CUBO PARA VOLTAR AO MENU PRINCIPAL</span>
