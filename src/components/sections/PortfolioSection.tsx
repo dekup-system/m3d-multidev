@@ -1,89 +1,43 @@
 import React from "react";
-import {
-  FileCheck2,
-  ArrowRight,
-  Lock,
-  TrendingUp,
-  Layers,
-  AlertCircle,
-} from "lucide-react";
+import { ArrowUpRight, Globe, Layers, Sparkles } from "lucide-react";
 import { WhatsAppContextualTrigger } from "@/components/conversion/WhatsAppContextualTrigger";
 
-interface CaseStudy {
-  id: string;
-  sectorDescriptor: string;
-  ndaBadge: string;
-  title: string;
-  problem: string;
-  solutionWindows: string;
-  solutionAndroid: string;
-  solutionWeb: string;
-  metric3MonthsPlaceholder: string;
-  metric12MonthsPlaceholder: string;
-  metricLabel3M: string;
-  metricLabel12M: string;
+interface PortfolioProject {
+  name: string;
+  category: string;
+  url: string;
+  displayUrl: string;
+  description: string;
+  highlights: string[];
 }
 
-/**
- * REGRA ANTI-ALUCINAÇÃO:
- * Nenhum nome de cliente real é inventado e nenhuma métrica é fabricada como se fosse
- * resultado real não-auditado. Utilizamos descritores credíveis de setor/porte sob NDA
- * e placeholders explícitos {{...}} prontos para preenchimento com dados auditados.
- */
-const NDA_CASE_STUDIES: CaseStudy[] = [
+const PORTFOLIO_PROJECTS: PortfolioProject[] = [
   {
-    id: "case-01",
-    sectorDescriptor: "[SETOR_INDUSTRIAL_LOGISTICO_MEDIO_GRANDE_PORTE]",
-    ndaBadge: "NDA Art. 4º · Auditoria Interna",
-    title: "Sincronização entre Pesagem/Expedição Local, Coleta em Pátio e ERP Web",
-    problem:
-      "Apontamentos manuais em planilhas paralelas entre balanças rodoviárias/industriais (Windows), conferentes de pátio (papel/rádio) e faturamento central geravam divergências de estoque e atrasos na liberação de carga.",
-    solutionWindows:
-      "Serviço Windows nativo integrado via RS-232 às balanças e impressoras térmicas com fila transacional local.",
-    solutionAndroid:
-      "App Android Offline-First em coletores industriais para conferência de lotes por QR Code/código de barras no galpão.",
-    solutionWeb:
-      "Painel Web gerencial com rastreabilidade em tempo real de docas, alertas de divergência e API conectada ao ERP.",
-    metricLabel3M: "Redução de retrabalho e divergência (Janela 3 meses)",
-    metric3MonthsPlaceholder: "{{METRICA_REAL_3M_EX_REDUCAO_ERRO_EXPEDICAO_%}}",
-    metricLabel12M: "Ganho de vazão operacional auditado (Janela 12 meses)",
-    metric12MonthsPlaceholder: "{{METRICA_REAL_12M_EX_GANHO_THROUGHPUT_ANUAL_%}}",
+    name: "DEKUP",
+    category: "Sistema & Plataforma Digital",
+    url: "https://www.dekup.com.br/",
+    displayUrl: "dekup.com.br",
+    description:
+      "Ecossistema digital desenvolvido sob medida com foco em alta performance operacional, automação de processos e experiência fluida entre dispositivos.",
+    highlights: ["Arquitetura Multiplataforma", "Alta Performance", "Automação de Fluxos"],
   },
   {
-    id: "case-02",
-    sectorDescriptor: "[SETOR_DISTRIBUICAO_E_FORCA_DE_VENDAS_B2B]",
-    ndaBadge: "NDA Comercial · LGPD Compliant",
-    title: "Automação de Força de Vendas em Campo Conectada ao Retaguarda Desktop e Portal B2B",
-    problem:
-      "Representantes externos sofriam com perda de pedidos em zonas sem cobertura celular, enquanto a equipe interna precisava redigitar condições comerciais no sistema Windows legado.",
-    solutionWindows:
-      "Conector sincronizador Windows Service acoplado ao banco de dados do ERP legado com validação de regras fiscais.",
-    solutionAndroid:
-      "Aplicativo Android com catálogo completo, cálculo de impostos/margem offline e sincronia delta automática.",
-    solutionWeb:
-      "Portal Web B2B de autoatendimento e dashboard de acompanhamento de metas e comissionamento em tempo real.",
-    metricLabel3M: "Tempo médio de ciclo do pedido (Janela 3 meses)",
-    metric3MonthsPlaceholder: "{{METRICA_REAL_3M_EX_REDUCAO_CICLO_PEDIDO_%}}",
-    metricLabel12M: "Eliminação de redigitação manual (Janela 12 meses)",
-    metric12MonthsPlaceholder: "{{METRICA_REAL_12M_EX_AUTOMACAO_PEDIDOS_%}}",
+    name: "NexIA Core",
+    category: "Inteligência & Automação Corporativa",
+    url: "https://www.nexiacore.com.br/",
+    displayUrl: "nexiacore.com.br",
+    description:
+      "Plataforma inteligente voltada à integração de operações, atendimento e gestão com tecnologia moderna e fluxos automatizados em nuvem.",
+    highlights: ["IA & Automação", "Gestão em Nuvem", "Integração de Sistemas"],
   },
   {
-    id: "case-03",
-    sectorDescriptor: "[SETOR_SERVICOS_TECNICOS_E_ENGENHARIA_DE_CAMPO]",
-    ndaBadge: "NDA Operacional · SLA Missão Crítica",
-    title: "Gestão de Ordens de Serviço, Telemetria de Equipamentos e Laudos Técnicos",
-    problem:
-      "Falta de padronização entre diagnósticos de bancada (software técnico Windows), checklists fotográficos em campo (Android) e liberação de laudos para clientes corporativos (Web).",
-    solutionWindows:
-      "Aplicação desktop Windows para leitura de instrumentos de bancada via USB e geração de pacotes criptografados.",
-    solutionAndroid:
-      "App Android para técnicos em campo com captura de evidências, assinatura digital, geolocalização e modo offline.",
-    solutionWeb:
-      "Central Web de despacho, controle de SLA em tempo real e portal do cliente para download de certificados.",
-    metricLabel3M: "Conformidade de SLA no primeiro atendimento (3 meses)",
-    metric3MonthsPlaceholder: "{{METRICA_REAL_3M_EX_SLA_PRIMEIRO_ATENDIMENTO_%}}",
-    metricLabel12M: "Redução no tempo de emissão de laudos (12 meses)",
-    metric12MonthsPlaceholder: "{{METRICA_REAL_12M_EX_REDUCAO_TEMPO_LAUDO_%}}",
+    name: "Kitefy",
+    category: "Aplicação Web Moderna",
+    url: "https://kitefy.vercel.app",
+    displayUrl: "kitefy.vercel.app",
+    description:
+      "Aplicação web responsiva e rápida, projetada com interface intuitiva, carregamento instantâneo e arquitetura escalável.",
+    highlights: ["UX/UI Minimalista", "Web App Responsivo", "Deploy Cloud"],
   },
 ];
 
@@ -92,134 +46,93 @@ export function PortfolioSection() {
     <section
       id="portfolio"
       aria-labelledby="heading-portfolio"
-      className="border-t border-[#E4E4E7] bg-[#FBFBFA] py-20 lg:py-28"
+      className="border-t border-[#E4E4E7] bg-[#FBFBFA] py-20"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Cabeçalho */}
-        <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
-          <div className="max-w-3xl">
-            <span className="inline-flex items-center gap-2 rounded-full border border-[#008CDD]/25 bg-[#008CDD]/8 px-3.5 py-1 font-mono text-xs font-semibold tracking-wider text-[#008CDD] uppercase">
-              <FileCheck2 className="h-3.5 w-3.5" aria-hidden="true" />
-              Portfólio & Arquiteturas de Referência (Compatível com NDA)
-            </span>
-            <h2
-              id="heading-portfolio"
-              className="mt-4 font-sans text-3xl font-bold tracking-tight text-[#131316] sm:text-4xl"
-            >
-              Estudos de Caso: Problema → Solução Multiplataforma → Resultado
-            </h2>
-          </div>
-
-          <div className="flex items-start gap-2.5 rounded-xl border border-[#E4E4E7] bg-white p-3.5 text-xs text-[#52525B] lg:max-w-sm">
-            <Lock className="mt-0.5 h-4 w-4 shrink-0 text-[#008CDD]" aria-hidden="true" />
-            <span>
-              Em respeito aos acordos de confidencialidade (NDA) e à LGPD, identificadores
-              de clientes são anonimizados e métricas exibem placeholders explícitos para
-              dados auditados.
-            </span>
-          </div>
+        {/* Cabeçalho Limpo e Direto */}
+        <div className="mx-auto max-w-2xl text-center">
+          <span className="inline-flex items-center gap-2 rounded-full border border-[#008CDD]/25 bg-[#008CDD]/8 px-3.5 py-1 font-mono text-xs font-semibold tracking-wider text-[#008CDD] uppercase">
+            <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
+            Portfólio M3D Multidev
+          </span>
+          <h2
+            id="heading-portfolio"
+            className="mt-4 font-sans text-3xl font-bold tracking-tight text-[#131316] sm:text-4xl"
+          >
+            Projetos reais em produção
+          </h2>
+          <p className="mt-3 text-base text-[#52525B]">
+            Conheça algumas das plataformas e soluções desenvolvidas pela nossa engenharia.
+          </p>
         </div>
 
-        {/* Lista de Estudos de Caso */}
-        <div className="mt-12 grid grid-cols-1 gap-8 lg:grid-cols-3">
-          {NDA_CASE_STUDIES.map((item) => (
+        {/* Cards dos 3 Projetos Reais */}
+        <div className="mt-12 grid grid-cols-1 gap-6 lg:grid-cols-3">
+          {PORTFOLIO_PROJECTS.map((project) => (
             <article
-              key={item.id}
-              className="bento-card flex flex-col justify-between p-6 sm:p-7"
+              key={project.name}
+              className="bento-card group flex flex-col justify-between p-7 transition-all hover:-translate-y-1"
             >
               <div>
-                {/* Descritor de Setor e Selo NDA */}
-                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#E4E4E7] pb-4">
-                  <span className="font-mono text-[11px] font-bold text-[#0A2540]">
-                    {item.sectorDescriptor}
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-mono text-xs font-semibold text-[#008CDD]">
+                    {project.category}
                   </span>
-                  <span className="inline-flex items-center gap-1 rounded-full bg-[#F7F7F8] px-2.5 py-0.5 font-mono text-[10px] font-medium text-[#52525B]">
-                    <Lock className="h-2.5 w-2.5 text-[#008CDD]" aria-hidden="true" />
-                    {item.ndaBadge}
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-[#E4E4E7] bg-[#F7F7F8] px-2.5 py-1 font-mono text-[11px] text-[#52525B]">
+                    <Globe className="h-3 w-3 text-[#008CDD]" aria-hidden="true" />
+                    {project.displayUrl}
                   </span>
                 </div>
 
-                {/* Título */}
-                <h3 className="mt-4 font-sans text-lg font-bold leading-snug text-[#131316]">
-                  {item.title}
+                <h3 className="mt-4 font-sans text-2xl font-bold text-[#131316]">
+                  {project.name}
                 </h3>
 
-                {/* 1. Problema */}
-                <div className="mt-4 rounded-xl border border-[#E4E4E7] bg-[#FAFAFA] p-3.5">
-                  <div className="flex items-center gap-1.5 font-mono text-[11px] font-semibold text-[#131316] uppercase">
-                    <AlertCircle className="h-3.5 w-3.5 text-[#008CDD]" aria-hidden="true" />
-                    <span>1. Cenário & Gargalo Operacional</span>
-                  </div>
-                  <p className="mt-1.5 text-xs leading-relaxed text-[#52525B]">
-                    {item.problem}
-                  </p>
-                </div>
+                <p className="mt-3 text-sm leading-relaxed text-[#52525B]">
+                  {project.description}
+                </p>
 
-                {/* 2. Solução Multiplataforma (Windows + Android + Web) */}
-                <div className="mt-4 space-y-2.5">
-                  <div className="flex items-center gap-1.5 font-mono text-[11px] font-semibold text-[#008CDD] uppercase">
-                    <Layers className="h-3.5 w-3.5" aria-hidden="true" />
-                    <span>2. Arquitetura Integrada M3D</span>
-                  </div>
-
-                  <div className="rounded-lg border border-[#E4E4E7] bg-white p-2.5 text-xs">
-                    <strong className="font-mono text-[#131316]">Windows: </strong>
-                    <span className="text-[#52525B]">{item.solutionWindows}</span>
-                  </div>
-
-                  <div className="rounded-lg border border-[#E4E4E7] bg-white p-2.5 text-xs">
-                    <strong className="font-mono text-[#131316]">Android: </strong>
-                    <span className="text-[#52525B]">{item.solutionAndroid}</span>
-                  </div>
-
-                  <div className="rounded-lg border border-[#E4E4E7] bg-white p-2.5 text-xs">
-                    <strong className="font-mono text-[#131316]">Web: </strong>
-                    <span className="text-[#52525B]">{item.solutionWeb}</span>
-                  </div>
+                <div className="mt-5 flex flex-wrap gap-2">
+                  {project.highlights.map((tag) => (
+                    <span
+                      key={tag}
+                      className="inline-flex items-center gap-1 rounded-lg border border-[#E4E4E7] bg-[#FAFAFA] px-2.5 py-1 font-mono text-[11px] font-medium text-[#131316]"
+                    >
+                      <Layers className="h-3 w-3 text-[#008CDD]" aria-hidden="true" />
+                      {tag}
+                    </span>
+                  ))}
                 </div>
               </div>
 
-              {/* 3. Resultados Mensuráveis (Placeholders Auditáveis 3M e 12M) */}
-              <div className="mt-6 border-t border-[#E4E4E7] pt-5">
-                <div className="flex items-center gap-1.5 font-mono text-[11px] font-semibold text-[#0A2540] uppercase">
-                  <TrendingUp className="h-3.5 w-3.5 text-[#008CDD]" aria-hidden="true" />
-                  <span>3. Indicadores Auditados (3 e 12 Meses)</span>
-                </div>
-
-                <div className="mt-3 space-y-2">
-                  <div className="rounded-xl border border-[#008CDD]/25 bg-[#008CDD]/6 p-3">
-                    <div className="text-[11px] text-[#52525B]">{item.metricLabel3M}</div>
-                    <div className="mt-1 break-all font-mono text-xs font-bold text-[#0A2540]">
-                      {item.metric3MonthsPlaceholder}
-                    </div>
-                  </div>
-
-                  <div className="rounded-xl border border-[#008CDD]/25 bg-[#008CDD]/6 p-3">
-                    <div className="text-[11px] text-[#52525B]">{item.metricLabel12M}</div>
-                    <div className="mt-1 break-all font-mono text-xs font-bold text-[#0A2540]">
-                      {item.metric12MonthsPlaceholder}
-                    </div>
-                  </div>
-                </div>
+              <div className="mt-7 border-t border-[#E4E4E7] pt-4">
+                <a
+                  href={project.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex w-full items-center justify-between rounded-xl bg-[#F7F7F8] px-4 py-2.5 font-sans text-sm font-semibold text-[#131316] transition-colors group-hover:bg-[#008CDD] group-hover:text-white"
+                >
+                  <span>Acessar {project.name}</span>
+                  <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                </a>
               </div>
             </article>
           ))}
         </div>
 
-        {/* Rodapé da Seção com CTA para Demonstração Técnica sob NDA */}
+        {/* CTA Enxuto */}
         <div className="mt-10 flex flex-col items-center justify-between gap-4 rounded-2xl border border-[#E4E4E7] bg-white p-6 sm:flex-row">
           <div>
             <h3 className="font-sans text-base font-bold text-[#131316]">
-              Deseja avaliar uma arquitetura similar para o seu setor sob NDA?
+              Quer tirar o seu projeto do papel com esse padrão de entrega?
             </h3>
-            <p className="mt-1 text-xs text-[#52525B]">
-              Apresentamos diagramas C4, contratos OpenAPI 3.1 e demonstrações funcionais
-              diretamente com um engenheiro sênior.
+            <p className="mt-1 text-sm text-[#52525B]">
+              Converse direto com a nossa equipe e receba uma proposta sob medida.
             </p>
           </div>
           <WhatsAppContextualTrigger
-            originSection="portfolio_nda"
-            label="Solicitar Demonstração sob NDA"
+            originSection="portfolio"
+            label="Solicitar Orçamento no WhatsApp"
             variant="primary"
           />
         </div>
