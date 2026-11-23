@@ -14,78 +14,52 @@ import { LogoFullSVG } from "./LogoFullSVG";
 import { Pause, Play } from "lucide-react";
 
 /**
- * Desenha um retângulo com cantos arredondados no Canvas 2D.
+ * Gera uma imagem/textura com FUNDO 100% TRANSPARENTE contendo apenas a letra
+ * ("M", "3" ou "D") em grafite profundo (#131316).
+ * Como o fundo é totalmente transparente, não existe nenhum quadrado ou ponta
+ * ao redor da letra — ela é aplicada diretamente sobre a superfície do cubo branco.
+ *
+ * Orientação exata da letra "D" no topo conforme a imagem original:
+ * - No cubo visto de frente (câmera olhando para a aresta entre M e 3),
+ *   a letra D no topo está deitada na horizontal:
+ *   • A linha reta da base do "D" fica na parte de baixo (apontando para a quina frontal entre M e 3),
+ *     formando um "V" junto com as bordas do topo;
+ *   • O arco redondo do "D" fica voltado para cima/trás.
+ *   Para isso, desenhamos o "D" rotacionado 90° no sentido anti-horário (-Math.PI / 2)
+ *   para que a haste reta fique embaixo e o arco em cima, e aplicamos a rotação de +45°
+ *   (+Math.PI / 4) para compensar o giro de -45° em Y do cubo.
+ *   Resultado líquido no canvas da face superior: -Math.PI / 4 (-45°).
  */
-function drawRoundedRect(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  width: number,
-  height: number,
-  radius: number
-) {
-  ctx.beginPath();
-  ctx.moveTo(x + radius, y);
-  ctx.lineTo(x + width - radius, y);
-  ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-  ctx.lineTo(x + width, y + height - radius);
-  ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-  ctx.lineTo(x + radius, y + height);
-  ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-  ctx.lineTo(x, y + radius);
-  ctx.quadraticCurveTo(x, y, x + radius, y);
-  ctx.closePath();
-}
-
-/**
- * Gera a textura 512x512 para cada uma das 3 faces visíveis ("M", "3", "D"):
- * - Todas as faces têm exatamente a mesma dimensão (1.32 x 1.32) e a mesma
- *   proporção de fonte (315px) para M, 3 e D.
- * - O quadro quadrado da textura fica 100% paralelo às arestas de cada face do cubo.
- * - Para a letra "D" do topo, posiciona o D diagonalmente na mesma orientação
- *   exata da logomarca original enviada (haste reta apontando para o canto
- *   superior-esquerdo e barriga curva apontando para o vértice frontal-inferior).
- */
-function createGlyphTexture(glyph: "M" | "3" | "D"): THREE.CanvasTexture {
+function createTransparentGlyphTexture(glyph: "M" | "3" | "D"): THREE.CanvasTexture {
   const canvas = document.createElement("canvas");
   canvas.width = 512;
   canvas.height = 512;
   const ctx = canvas.getContext("2d");
 
   if (ctx) {
+    // Fundo 100% transparente (nenhum retângulo ou borda desenhada)
     ctx.clearRect(0, 0, 512, 512);
-
-    // Quadro da face com cantos arredondados seguindo o chanfro do cubo branco
-    drawRoundedRect(ctx, 16, 16, 480, 480, 84);
-    ctx.fillStyle = "#F2F2F5";
-    ctx.fill();
-
-    ctx.lineWidth = 6;
-    ctx.strokeStyle = "#E4E4E7";
-    ctx.stroke();
 
     ctx.save();
     ctx.translate(256, 256);
 
     if (glyph === "D") {
-      // Com o cubo girado a -45° em Y e a face superior deitada (-90° em X),
-      // girar +45° (Math.PI / 4) alinha a letra D exatamente na horizontal da câmera:
-      // haste reta na parte superior-esquerda e barriga curva apontando para baixo (entre M e 3),
-      // idêntico à logomarca original e com o mesmo tamanho proporcional de M e 3.
-      ctx.rotate(Math.PI / 4);
+      // Na imagem original, o D no topo tem sua haste reta voltada para frente/baixo-esquerda
+      // e a barriga curva voltada para cima/direita.
+      ctx.rotate(-Math.PI / 4);
     }
 
     ctx.fillStyle = "#131316";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.font = "900 315px system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif";
-    ctx.fillText(glyph, 0, 14);
+    ctx.font = "900 340px system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif";
+    ctx.fillText(glyph, 0, 12);
     ctx.restore();
   }
 
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
-  texture.anisotropy = 4;
+  texture.anisotropy = 8;
   texture.needsUpdate = true;
   return texture;
 }
@@ -102,15 +76,14 @@ function ProceduralM3DCube({
   scrollProgress,
 }: ProceduralM3DCubeProps) {
   const groupRef = useRef<THREE.Group>(null);
-  const arrowRef = useRef<THREE.Group>(null);
   const { invalidate } = useThree();
 
   const textures = useMemo(() => {
     if (typeof document === "undefined") return null;
     return {
-      M: createGlyphTexture("M"),
-      three: createGlyphTexture("3"),
-      D: createGlyphTexture("D"),
+      M: createTransparentGlyphTexture("M"),
+      three: createTransparentGlyphTexture("3"),
+      D: createTransparentGlyphTexture("D"),
     };
   }, []);
 
@@ -129,12 +102,13 @@ function ProceduralM3DCube({
   useFrame((state, delta) => {
     if (!groupRef.current || !isActive) return;
 
-    const baseRotX = 0.42 + scrollProgress * 0.18;
-    const baseRotY = -Math.PI / 4 + scrollProgress * 0.35;
+    // Ângulo isométrico fiel à imagem original (M na esquerda, 3 na direita, D no topo)
+    const baseRotX = 0.46 + scrollProgress * 0.15;
+    const baseRotY = -Math.PI / 4 + scrollProgress * 0.3;
 
-    const pointerX = isPaused ? 0 : state.pointer.x * 0.22;
-    const pointerY = isPaused ? 0 : state.pointer.y * 0.16;
-    const idleFloat = isPaused ? 0 : Math.sin(state.clock.elapsedTime * 1.6) * 0.04;
+    const pointerX = isPaused ? 0 : state.pointer.x * 0.2;
+    const pointerY = isPaused ? 0 : state.pointer.y * 0.14;
+    const idleFloat = isPaused ? 0 : Math.sin(state.clock.elapsedTime * 1.5) * 0.04;
 
     const targetX = baseRotX - pointerY;
     const targetY = baseRotY + pointerX;
@@ -151,14 +125,9 @@ function ProceduralM3DCube({
     );
     groupRef.current.position.y = THREE.MathUtils.lerp(
       groupRef.current.position.y,
-      0.15 + idleFloat,
+      idleFloat,
       Math.min(1, delta * 6)
     );
-
-    if (arrowRef.current) {
-      const arrowPulse = isPaused ? 0 : Math.sin(state.clock.elapsedTime * 3) * 0.05;
-      arrowRef.current.position.y = -1.55 + arrowPulse;
-    }
 
     if (!isPaused && isActive) {
       state.invalidate();
@@ -166,90 +135,66 @@ function ProceduralM3DCube({
   });
 
   return (
-    <group>
-      <group ref={groupRef} rotation={[0.42, -Math.PI / 4, 0]} position={[0, 0.15, 0]}>
-        {/* Corpo Principal do Cubo M3D: Branco/Cinza-Claro Acetinado */}
-        <RoundedBox args={[1.86, 1.86, 1.86]} radius={0.28} smoothness={6}>
-          <meshPhysicalMaterial
-            color="#F8F8FA"
-            roughness={0.28}
-            metalness={0.04}
-            clearcoat={0.35}
-            clearcoatRoughness={0.25}
-            reflectivity={0.5}
-          />
-        </RoundedBox>
+    <group ref={groupRef} rotation={[0.46, -Math.PI / 4, 0]} position={[0, 0, 0]}>
+      {/* Corpo Principal do Cubo M3D: Branco/Cinza-Claro Acetinado com Bordas Arredondadas */}
+      <RoundedBox args={[2.0, 2.0, 2.0]} radius={0.34} smoothness={8}>
+        <meshPhysicalMaterial
+          color="#F5F5F7"
+          roughness={0.26}
+          metalness={0.03}
+          clearcoat={0.3}
+          clearcoatRoughness={0.25}
+          reflectivity={0.5}
+        />
+      </RoundedBox>
 
-        {/* Placa Face Topo (+Y) — Alinhada às 4 bordas superiores do cubo e com a mesma dimensão (1.32 x 1.32) */}
-        {textures && (
-          <mesh position={[0, 0.934, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-            <planeGeometry args={[1.32, 1.32]} />
-            <meshPhysicalMaterial
-              map={textures.D}
-              transparent
-              alphaTest={0.02}
-              roughness={0.35}
-              metalness={0.02}
-              polygonOffset
-              polygonOffsetFactor={-1}
-            />
-          </mesh>
-        )}
-
-        {/* Placa Face Esquerda (+Z) — Glifo "M" (1.32 x 1.32) */}
-        {textures && (
-          <mesh position={[0, 0, 0.934]}>
-            <planeGeometry args={[1.32, 1.32]} />
-            <meshPhysicalMaterial
-              map={textures.M}
-              transparent
-              alphaTest={0.02}
-              roughness={0.35}
-              metalness={0.02}
-              polygonOffset
-              polygonOffsetFactor={-1}
-            />
-          </mesh>
-        )}
-
-        {/* Placa Face Direita (+X) — Glifo "3" (1.32 x 1.32) */}
-        {textures && (
-          <mesh position={[0.934, 0, 0]} rotation={[0, Math.PI / 2, 0]}>
-            <planeGeometry args={[1.32, 1.32]} />
-            <meshPhysicalMaterial
-              map={textures.three}
-              transparent
-              alphaTest={0.02}
-              roughness={0.35}
-              metalness={0.02}
-              polygonOffset
-              polygonOffsetFactor={-1}
-            />
-          </mesh>
-        )}
-      </group>
-
-      {/* Seta Azul Elétrica Cinética (#008CDD) abaixo do vértice inferior */}
-      <group ref={arrowRef} position={[0, -1.55, 0]}>
-        <mesh position={[0, 0.14, 0]}>
-          <cylinderGeometry args={[0.045, 0.045, 0.34, 16]} />
+      {/* Letra "D" no Topo (+Y) com fundo 100% transparente */}
+      {textures && (
+        <mesh position={[0, 1.003, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+          <planeGeometry args={[1.36, 1.36]} />
           <meshStandardMaterial
-            color="#008CDD"
-            emissive="#008CDD"
-            emissiveIntensity={0.35}
-            roughness={0.2}
+            map={textures.D}
+            transparent
+            alphaTest={0.05}
+            depthWrite={false}
+            roughness={0.4}
+            polygonOffset
+            polygonOffsetFactor={-2}
           />
         </mesh>
-        <mesh position={[0, -0.08, 0]} rotation={[Math.PI, 0, 0]}>
-          <coneGeometry args={[0.16, 0.24, 4]} />
+      )}
+
+      {/* Letra "M" na Face Esquerda (+Z) com fundo 100% transparente */}
+      {textures && (
+        <mesh position={[0, 0, 1.003]}>
+          <planeGeometry args={[1.36, 1.36]} />
           <meshStandardMaterial
-            color="#008CDD"
-            emissive="#008CDD"
-            emissiveIntensity={0.45}
-            roughness={0.2}
+            map={textures.M}
+            transparent
+            alphaTest={0.05}
+            depthWrite={false}
+            roughness={0.4}
+            polygonOffset
+            polygonOffsetFactor={-2}
           />
         </mesh>
-      </group>
+      )}
+
+      {/* Letra "3" na Face Direita (+X) com fundo 100% transparente */}
+      {textures && (
+        <mesh position={[1.003, 0, 0]} rotation={[0, Math.PI / 2, 0]}>
+          <planeGeometry args={[1.36, 1.36]} />
+          <meshStandardMaterial
+            map={textures.three}
+            transparent
+            alphaTest={0.05}
+            depthWrite={false}
+            roughness={0.4}
+            polygonOffset
+            polygonOffsetFactor={-2}
+          />
+        </mesh>
+      )}
     </group>
   );
 }
@@ -325,7 +270,7 @@ export function LogoCube3D({ className }: LogoCube3DProps) {
   return (
     <div
       ref={containerRef}
-      className={`relative flex aspect-square w-full max-w-[420px] flex-col items-center justify-center rounded-3xl border border-[#E4E4E7] bg-linear-to-b from-white via-[#FAFAFA] to-[#F4F4F6] p-4 shadow-xs ${className ?? ""}`}
+      className={`relative flex aspect-square w-full max-w-[400px] flex-col items-center justify-center rounded-3xl border border-[#E4E4E7] bg-linear-to-b from-white via-[#FAFAFA] to-[#F4F4F6] p-4 shadow-xs ${className ?? ""}`}
       aria-label="Cubo 3D interativo M3D Multidev"
     >
       {rendererMode === "webgpu-webgl2" && (
@@ -352,14 +297,14 @@ export function LogoCube3D({ className }: LogoCube3DProps) {
 
       {rendererMode !== "webgpu-webgl2" ? (
         <div className="flex h-full w-full flex-col items-center justify-center p-6">
-          <LogoFullSVG className="h-60 w-60" animatedArrow={!isPaused} />
+          <LogoFullSVG className="h-56 w-56" />
         </div>
       ) : (
         <div className="relative h-full w-full">
           <Canvas
             frameloop="demand"
             dpr={dpr}
-            camera={{ position: [0, 0.3, 4.9], fov: 38 }}
+            camera={{ position: [0, 0.15, 4.5], fov: 38 }}
             gl={{
               antialias: true,
               alpha: true,
@@ -372,9 +317,9 @@ export function LogoCube3D({ className }: LogoCube3DProps) {
               onIncline={() => setDpr(Math.min(2, window.devicePixelRatio || 1.5))}
               onDecline={() => setDpr(1)}
             >
-              <ambientLight intensity={0.85} />
+              <ambientLight intensity={0.9} />
               <directionalLight position={[5, 8, 5]} intensity={1.35} />
-              <directionalLight position={[-5, 3, -4]} intensity={0.45} color="#008CDD" />
+              <directionalLight position={[-5, 3, -4]} intensity={0.4} color="#008CDD" />
 
               <Environment resolution={128}>
                 <Lightformer
@@ -407,24 +352,13 @@ export function LogoCube3D({ className }: LogoCube3DProps) {
               <ContactShadows
                 position={[0, -1.25, 0]}
                 opacity={0.22}
-                scale={6.5}
+                scale={6.0}
                 blur={2.4}
                 far={3.5}
                 color="#0A2540"
               />
             </PerformanceMonitor>
           </Canvas>
-
-          <div className="pointer-events-none absolute right-0 bottom-2 left-0 flex flex-col items-center">
-            <div className="flex items-center gap-3 font-mono text-xs font-bold tracking-[0.28em] text-[#0A2540]">
-              <span>DEVE</span>
-              <span
-                className="inline-block h-2 w-2 rounded-full bg-[#008CDD]"
-                aria-hidden="true"
-              />
-              <span>LOPER</span>
-            </div>
-          </div>
         </div>
       )}
     </div>
