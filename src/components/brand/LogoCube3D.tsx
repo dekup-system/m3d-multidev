@@ -44,11 +44,8 @@ function createTransparentGlyphTexture(glyph: "M" | "3" | "D"): THREE.CanvasText
     ctx.translate(256, 256);
 
     if (glyph === "D") {
-      // Alinha a letra D do topo com a face da letra 3 (+X):
-      // Girando +90° (Math.PI / 2), a parte de baixo da letra D fica alinhada com a
-      // aresta da face da letra 3 (+X), com a haste reta voltada para frente/esquerda (+Z)
-      // e a barriga curva voltada para cima/trás (-Z), exatamente como na imagem original!
-      ctx.rotate(Math.PI / 2);
+      // Giro exato de 180° em relação a +Math.PI / 2 -> -Math.PI / 2
+      ctx.rotate(-Math.PI / 2);
     }
 
     ctx.fillStyle = "#131316";
